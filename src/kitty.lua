@@ -1,4 +1,4 @@
-local parser = require("parser")
+local parser = require("/rom/kitty/parser")
 
 local mon = peripheral.find("monitor")
 if not mon then
