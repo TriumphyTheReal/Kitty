@@ -3,7 +3,7 @@ local URLS = {
     "https://raw.githubusercontent.com/TriumphyTheReal/Kitty/main/src/parser.lua",
 }
 
-fs.makeDir("rom/kitty")
+fs.makeDir("/kitty")
 
 local function drawBar(curr, total, name)
     term.clear()
@@ -35,7 +35,7 @@ for i, url in ipairs(URLS) do
     sleep(0.2)
 end
 
-fs.move("parser.lua", "/rom/kitty/parser.lua")
+fs.move("parser.lua", "/kitty/parser.lua")
 
 print("\nDone! Rebooting...")
 sleep(1.5)
