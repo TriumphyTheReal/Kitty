@@ -95,7 +95,7 @@ local function drawUI()
                 term.setTextColor(colors.white)
                 term.write("<-")
             else
-                term.setBackgroundColor(colors.charcoal)
+                term.setBackgroundColor(colors.gray)
                 term.setTextColor(colors.white)
                 term.write(" " .. key .. " ")
             end
