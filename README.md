@@ -12,12 +12,8 @@ You first need ADVANCED Monitors, not NORMAL monitors. You need them to be in a 
 4x3 WILL work!
 You must connect a ADVANCED Computer to the monitor.
 
-## Computer Setup
-Now that you have that done. You can copy and run this into your computer:
-  `wget https://github.com/TriumphyTheReal/Kitty/raw/refs/heads/main/setup.lua setup.lua`
-   and 
-  `setup`
-and the rest will be done.
-
 # How to use
-When you open your computer, enter in `kitty` and the rest will be on the monitor!
+Now that you have that done. You can copy and run this into your computer:
+  `wget https://github.com/TriumphyTheReal/Kitty/raw/refs/heads/main/kitty.lua kitty.lua`
+   and 
+  `kitty`
