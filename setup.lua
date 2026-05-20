@@ -2,9 +2,7 @@ local URLS = {
     "https://raw.githubusercontent.com/TriumphyTheReal/Kitty/main/src/kitty.lua",
     "https://raw.githubusercontent.com/TriumphyTheReal/Kitty/main/src/parser.lua",
 }
-
 fs.makeDir("/kitty")
-
 local function drawBar(curr, total, name)
     term.clear()
     local w, h = term.getSize()
