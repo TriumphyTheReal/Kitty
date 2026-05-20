@@ -101,6 +101,7 @@ local function fetchPage(url)
                 {text = "Error: Could not connect.", fg = colors.red, bg = colors.white},
                 {text = tostring(err), fg = colors.gray, bg = colors.white}
             }
+        end
     else
         local html = response.readAll()
         response.close()
