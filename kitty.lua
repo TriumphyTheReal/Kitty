@@ -90,10 +90,17 @@ local function fetchPage(url)
     scrollOffset = 1
     local response, err = http.get(url)
     if not response then
-        pageLines = {
-            {text = "Error: Could not connect.", fg = colors.red, bg = colors.white},
-            {text = tostring(err), fg = colors.gray, bg = colors.white}
-        }
+        if err == "Domain not permitted" then
+            pageLines = {
+                {text = "Error: Could not connect.", fg = colors.red, bg = colors.white},
+                {text = tostring(err), fg = colors.gray, bg = colors.white},
+                {text = "Enable HTTP!", fg = colors.green, bg = colors.white}
+            }
+        else
+            pageLines = {
+                {text = "Error: Could not connect.", fg = colors.red, bg = colors.white},
+                {text = tostring(err), fg = colors.gray, bg = colors.white}
+            }
     else
         local html = response.readAll()
         response.close()
