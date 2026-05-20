@@ -14,7 +14,7 @@ You must connect a ADVANCED Computer to the monitor.
 
 ## Computer Setup
 Now that you have that done. You can copy and run this into your computer:
-  `wget run WIP`
+  `wget run https://github.com/TriumphyTheReal/Kitty/raw/refs/heads/main/setup.lua`
 and the rest will be done.
 
 # How to use
