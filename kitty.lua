@@ -116,7 +116,7 @@ local function drawUI()
     term.setBackgroundColor(colors.purple)
     term.setTextColor(colors.white)
     term.clearLine()
-    term.write(" KITTY BROWSER ")
+    term.write(" KITTY ")
     term.setCursorPos(1, 2)
     term.setBackgroundColor(colors.gray)
     term.setTextColor(colors.white)
@@ -210,9 +210,9 @@ local function handleTouch(x, y)
 end
 
 pageLines = {
-    {text = "Welcome to KITTY Browser!", fg = colors.purple, bg = colors.white},
-    {text = "Use the virtual keyboard below to type a URL.", fg = colors.black, bg = colors.white},
-    {text = "Supports basic HTML tags & CSS color configurations.", fg = colors.gray, bg = colors.white}
+    {text = "Welcome to KITTY!", fg = colors.purple, bg = colors.white},
+    {text = "Use the keyboard below to type a URL.", fg = colors.black, bg = colors.white},
+    {text = "Version 1.0.0. Made by Triumphy. Enjoy!", fg = colors.gray, bg = colors.white}
 }
 
 while true do
