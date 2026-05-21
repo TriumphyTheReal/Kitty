@@ -5,13 +5,18 @@ function parser.parse(html, w)
     if not html then return pageLines end
     local currentColor = colors.black
     local currentBg = colors.white
+    local currentHref = nil
+    local currentTransform = "none"
+    
     html = html:gsub("[\r\n\t]", " ")
     html = html:gsub("%s+", " ")
+    
     local pos = 1
     while pos <= #html do
         local startTag, endTag = html:find("<[^>]+>", pos)
         local textChunk = ""
         local tagChunk = ""
+        
         if startTag then
             textChunk = html:sub(pos, startTag - 1)
             tagChunk = html:sub(startTag, endTag)
@@ -20,29 +25,65 @@ function parser.parse(html, w)
             textChunk = html:sub(pos)
             pos = #html + 1
         end
+        
         if #textChunk > 0 then
             textChunk = textChunk:gsub("&nbsp;", " ")
             textChunk = textChunk:gsub("&lt;", "<")
             textChunk = textChunk:gsub("&gt;", ">")
             textChunk = textChunk:gsub("&amp;", "&")
+            
+            if currentTransform == "uppercase" then
+                textChunk = textChunk:upper()
+            elseif currentTransform == "lowercase" then
+                textChunk = textChunk:lower()
+            end
+            
             while #textChunk > 0 do
                 local availableSpace = w - 2
                 local take = textChunk:sub(1, availableSpace)
-                table.insert(pageLines, {text = take, fg = currentColor, bg = currentBg})
+                table.insert(pageLines, {text = take, fg = currentColor, bg = currentBg, href = currentHref})
                 textChunk = textChunk:sub(availableSpace + 1)
             end
         end
+        
         if #tagChunk > 0 then
             local lowerTag = tagChunk:lower()
-            if lowerTag:find("^<h[1-6]") then
-                currentColor = colors.red
+            
+            if lowerTag:find("^<h[1-6]") or lowerTag:find("^<p") or lowerTag:find("^<div") then
+                if #pageLines > 0 and pageLines[#pageLines].text ~= "" then
+                    table.insert(pageLines, {text = "", fg = colors.black, bg = colors.white})
+                end
+                
+                if lowerTag:find("^<h1") then
+                    currentColor = colors.red
+                    currentTransform = "uppercase"
+                elseif lowerTag:find("^<h2") then
+                    currentColor = colors.orange
+                    currentTransform = "none"
+                elseif lowerTag:find("^<h3") then
+                    currentColor = colors.yellow
+                    currentTransform = "none"
+                elseif lowerTag:find("^<h[4-6]") then
+                    currentColor = colors.magenta
+                    currentTransform = "none"
+                elseif lowerTag:find("^<p") then
+                    currentColor = colors.black
+                    currentTransform = "none"
+                end
             elseif lowerTag:find("^</h[1-6]") or lowerTag:find("^</p>") or lowerTag:find("^</div>") then
                 currentColor = colors.black
+                currentTransform = "none"
+                table.insert(pageLines, {text = "", fg = colors.black, bg = colors.white})
             elseif lowerTag:find("^<a%s") then
                 currentColor = colors.blue
+                currentHref = tagChunk:match("href%s*=%s*\"([^\"]+)\"") or tagChunk:match("href%s*=%s*'([^']+)'")
             elseif lowerTag:find("^</a>") then
                 currentColor = colors.black
+                currentHref = nil
+            elseif lowerTag:find("^<br") then
+                table.insert(pageLines, {text = "", fg = currentColor, bg = currentBg})
             end
+            
             local styleMatch = tagChunk:match("style%s*=%s*\"([^\"]+)\"") or tagChunk:match("style%s*=%s*'([^']+)'")
             if styleMatch then
                 local colorWord = styleMatch:match("color%s*:%s*([%a%d]+)")
@@ -53,9 +94,14 @@ function parser.parse(html, w)
                 if bgWord and colors[bgWord] then
                     currentBg = colors[bgWord]
                 end
+                local textTransform = styleMatch:match("text%-transform%s*:%s*([%a%d]+)")
+                if textTransform then
+                    currentTransform = textTransform
+                end
             end
         end
     end
+    
     if #pageLines == 0 then
         table.insert(pageLines, {text = "Empty page.", fg = colors.gray, bg = colors.white})
     end
@@ -185,6 +231,23 @@ local function handleTouch(x, y)
             return
         end
     end
+    if y >= 3 and y < kbY - 1 and x < w then
+        local lineIdx = y - 3 + scrollOffset
+        if pageLines[lineIdx] and pageLines[lineIdx].href then
+            local href = pageLines[lineIdx].href
+            if href:find("^https?://") then
+                currentURL = href
+            elseif href:sub(1, 1) == "/" then
+                local base = currentURL:match("^(https?://[^/]+)") or currentURL
+                currentURL = base .. href
+            else
+                local base = currentURL:match("^(https?://.*/)") or (currentURL .. "/")
+                currentURL = base .. href
+            end
+            fetchPage(currentURL)
+            return
+        end
+    end
     if y >= kbY and y < kbY + #keys then
         local rowIdx = y - kbY + 1
         local row = keys[rowIdx]
@@ -212,7 +275,7 @@ end
 pageLines = {
     {text = "Welcome to KITTY!", fg = colors.purple, bg = colors.white},
     {text = "Use the keyboard below to type a URL.", fg = colors.black, bg = colors.white},
-    {text = "Version 1.0.0. Made by Triumphy. Enjoy!", fg = colors.gray, bg = colors.white}
+    {text = "Version 1.1.0. Clickable links supported!", fg = colors.gray, bg = colors.white}
 }
 
 while true do
